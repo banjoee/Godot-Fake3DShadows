@@ -1,0 +1,136 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://assets/player/shovel/shovel_attack.png" type="Texture" id=1]
+
+[sub_resource type="Animation" id=1]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=73]
+resource_name = "attack_1"
+length = 0.15
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.05, 0.1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ 3, 4, 5 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath("../../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "shovel_y_sort"
+} ]
+}
+
+[sub_resource type="Animation" id=77]
+resource_name = "attack_2"
+length = 0.15
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.05, 0.1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ 9, 10, 11 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath("../../..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "shovel_y_sort"
+} ]
+}
+
+[sub_resource type="AnimationNodeTimeScale" id=65]
+
+[sub_resource type="AnimationNodeAnimation" id=94]
+animation = "attack_1"
+
+[sub_resource type="AnimationNodeAnimation" id=95]
+animation = "attack_2"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=96]
+switch_mode = 2
+advance_condition = "hand_switched"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=97]
+switch_mode = 2
+advance_condition = "hand_switched"
+
+[sub_resource type="AnimationNodeStateMachine" id=92]
+states/attack_1/node = SubResource( 94 )
+states/attack_1/position = Vector2( 354.661, 51.9366 )
+states/attack_2/node = SubResource( 95 )
+states/attack_2/position = Vector2( 557.328, 52.381 )
+transitions = [ "attack_2", "attack_1", SubResource( 96 ), "attack_1", "attack_2", SubResource( 97 ) ]
+start_node = "attack_1"
+graph_offset = Vector2( -72.3391, -91.0634 )
+
+[sub_resource type="AnimationNodeBlendTree" id=71]
+graph_offset = Vector2( -424.898, -17.6667 )
+nodes/TimeScale/node = SubResource( 65 )
+nodes/TimeScale/position = Vector2( -80, 133.333 )
+nodes/attacks/node = SubResource( 92 )
+nodes/attacks/position = Vector2( -293.333, 106.667 )
+nodes/output/position = Vector2( 133.333, 186.667 )
+node_connections = [ "output", 0, "TimeScale", "TimeScale", 0, "attacks" ]
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=93]
+
+[node name="ShovelPivot" type="Position2D"]
+
+[node name="Shovel" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+hframes = 6
+vframes = 2
+
+[node name="ShovelAnimation" type="AnimationPlayer" parent="Shovel"]
+anims/RESET = SubResource( 1 )
+anims/attack_1 = SubResource( 73 )
+anims/attack_2 = SubResource( 77 )
+
+[node name="ShovelAnimationTree" type="AnimationTree" parent="Shovel"]
+tree_root = SubResource( 71 )
+anim_player = NodePath("../ShovelAnimation")
+active = true
+parameters/TimeScale/scale = 1.0
+parameters/attacks/playback = SubResource( 93 )
+parameters/attacks/conditions/hand_switched = false

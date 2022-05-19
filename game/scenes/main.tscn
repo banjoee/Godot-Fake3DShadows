@@ -1,0 +1,63 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://scenes/entities/player/player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scripts/world/world.gd" type="Script" id=2]
+[ext_resource path="res://scenes/light_spot.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/texture.png" type="Texture" id=6]
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=1]
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=2]
+
+[node name="World" type="YSort"]
+script = ExtResource( 2 )
+
+[node name="Light2D" parent="." instance=ExtResource( 5 )]
+position = Vector2( 401, 19 )
+scale = Vector2( 0.72, 0.72 )
+color = Color( 0.490196, 0.819608, 1, 1 )
+energy = 0.5
+
+[node name="CollisionShape2D" parent="Light2D/Area2D" index="0"]
+visible = true
+
+[node name="Light2D2" parent="." instance=ExtResource( 5 )]
+position = Vector2( 70, 192 )
+scale = Vector2( 0.56, 0.56 )
+color = Color( 1, 0.803922, 0.466667, 1 )
+script = null
+
+[node name="CollisionShape2D" parent="Light2D2/Area2D" index="0"]
+visible = true
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 182, 98 )
+cooldown = 0.25
+strength = 10.0
+can_use_shovel = false
+
+[node name="AnimationTree" parent="Player" index="4"]
+parameters/playback = SubResource( 1 )
+
+[node name="ShovelAnimationTree" parent="Player/YSort/ShovelPivot/Shovel" index="1"]
+parameters/attacks/playback = SubResource( 2 )
+
+[node name="TextureRect" type="TextureRect" parent="."]
+margin_right = 428.0
+margin_bottom = 240.0
+texture = ExtResource( 6 )
+expand = true
+stretch_mode = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color( 0.0901961, 0.109804, 0.211765, 1 )
+
+[editable path="Light2D"]
+[editable path="Light2D2"]
+[editable path="Player"]
+[editable path="Player/Hurtbox"]
+[editable path="Player/Hitbox"]
+[editable path="Player/YSort/ShovelPivot"]

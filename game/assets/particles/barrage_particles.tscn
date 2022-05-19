@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=2]
+
+[sub_resource type="Gradient" id=1]
+colors = PoolColorArray( 1, 1, 1, 1, 0.380392, 0.937255, 1, 0 )
+
+[sub_resource type="GradientTexture" id=2]
+gradient = SubResource( 1 )
+
+[sub_resource type="Curve" id=3]
+_data = [ Vector2( 0.0046875, 0 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.0705521 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=4]
+curve = SubResource( 3 )
+
+[sub_resource type="ParticlesMaterial" id=5]
+trail_divisor = 150
+flag_disable_z = true
+direction = Vector3( -1, 0, 0 )
+spread = 10.0
+flatness = 1.0
+gravity = Vector3( 250, 0, 0 )
+initial_velocity = 50.0
+initial_velocity_random = 1.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+linear_accel = 100.0
+angle = 720.0
+angle_random = 1.0
+scale_random = 1.0
+color_ramp = SubResource( 2 )
+hue_variation = 0.05
+hue_variation_random = 1.0
+hue_variation_curve = SubResource( 4 )
+
+[node name="Particles2D" type="Particles2D"]
+position = Vector2( -14, 0 )
+amount = 2000
+lifetime = 2.0
+speed_scale = 2.5
+process_material = SubResource( 5 )

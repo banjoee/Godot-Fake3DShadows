@@ -1,0 +1,156 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://scenes/entities/common/hurtbox.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scripts/entity/hurtbox.gd" type="Script" id=2]
+[ext_resource path="res://scripts/entity/entity_base.gd" type="Script" id=3]
+[ext_resource path="res://assets/shadow.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/shaders/whiten.tres" type="Material" id=5]
+
+[sub_resource type="Shader" id=126]
+code = "shader_type canvas_item;
+
+// only show the shadow when 'inside' the area of a light source 
+render_mode blend_mix, unshaded, light_only;
+
+// parameters
+uniform float level = 0.5;
+uniform float shadowlength = 1.0;
+uniform float brightness : hint_range(-1, 1) = 0;
+uniform vec4 tint_color : hint_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform float tint_effect_factor : hint_range(0, 1) = 0.0;
+
+mat4 brightnessMatrix( float _brightness ) {
+    return mat4( vec4(1, 0, 0, 0),
+                 vec4(0, 1, 0, 0),
+                 vec4(0, 0, 1, 0),
+                 vec4(_brightness, _brightness, _brightness, 1));
+			}
+
+void fragment() {
+	vec4 c = texture(TEXTURE, UV);
+	vec4 c2 = c * tint_color;
+	COLOR = brightnessMatrix( brightness ) * mix(c, c2, tint_effect_factor);
+}
+
+// skew the shadow and adjust its length
+void vertex() {
+	VERTEX.y = VERTEX.y * shadowlength; // scale
+	VERTEX.x -= VERTEX.y * level;
+}"
+
+[sub_resource type="ShaderMaterial" id=6]
+resource_local_to_scene = true
+shader = SubResource( 126 )
+shader_param/level = 0.0
+shader_param/shadowlength = 1.0
+shader_param/brightness = -1.0
+shader_param/tint_color = Color( 0, 0, 0, 1 )
+shader_param/tint_effect_factor = 1.0
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hurtbox:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "hurt"
+length = 0.1
+step = 0.025
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.075 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 0.313726, 0.52549, 1 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=5]
+length = 0.001
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=2]
+resource_name = "bounce"
+length = 0.3
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2 ),
+"transitions": PoolRealArray( 0.267942, 1, 0.392292 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, -5 ), Vector2( 0, 0 ) ]
+}
+
+[node name="EntityBase" type="KinematicBody2D"]
+script = ExtResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="."]
+material = ExtResource( 5 )
+
+[node name="Shadow" parent="." instance=ExtResource( 4 )]
+material = SubResource( 6 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+
+[node name="Effects" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 3 )
+anims/hurt = SubResource( 4 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 5 )
+anims/bounce = SubResource( 2 )
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+anim_player = NodePath("../AnimationPlayer")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="Hurtbox" parent="." instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[connection signal="area_entered" from="Hurtbox" to="Hurtbox" method="_on_hurtbox_area_entered"]
+
+[editable path="Shadow"]

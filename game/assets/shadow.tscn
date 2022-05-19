@@ -1,0 +1,54 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://assets/entities/monsters/slime.png" type="Texture" id=1]
+[ext_resource path="res://scripts/shadow.gd" type="Script" id=2]
+
+[sub_resource type="Shader" id=126]
+code = "shader_type canvas_item;
+
+// only show the shadow when 'inside' the area of a light source 
+render_mode blend_mix, unshaded, light_only;
+
+// parameters
+uniform float level = 0.5;
+uniform float shadowlength = 1.0;
+uniform float brightness : hint_range(-1, 1) = 0;
+uniform vec4 tint_color : hint_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform float tint_effect_factor : hint_range(0, 1) = 0.0;
+
+mat4 brightnessMatrix( float _brightness ) {
+    return mat4( vec4(1, 0, 0, 0),
+                 vec4(0, 1, 0, 0),
+                 vec4(0, 0, 1, 0),
+                 vec4(_brightness, _brightness, _brightness, 1));
+			}
+
+void fragment() {
+	vec4 c = texture(TEXTURE, UV);
+	vec4 c2 = c * tint_color;
+	COLOR = brightnessMatrix( brightness ) * mix(c, c2, tint_effect_factor);
+}
+
+// skew the shadow and adjust its length
+void vertex() {
+	VERTEX.y = VERTEX.y * shadowlength; // scale
+	VERTEX.x -= VERTEX.y * level;
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+resource_local_to_scene = true
+shader = SubResource( 126 )
+shader_param/level = 0.0
+shader_param/shadowlength = 1.0
+shader_param/brightness = -1.0
+shader_param/tint_color = Color( 0, 0, 0, 1 )
+shader_param/tint_effect_factor = 1.0
+
+[node name="shadow" type="Sprite" groups=["shadow"]]
+modulate = Color( 1, 1, 1, 0.498039 )
+show_behind_parent = true
+material = SubResource( 2 )
+position = Vector2( 0, 2 )
+texture = ExtResource( 1 )
+offset = Vector2( 0, -6 )
+script = ExtResource( 2 )

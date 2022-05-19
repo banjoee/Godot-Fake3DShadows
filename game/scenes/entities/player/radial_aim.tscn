@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://assets/player/aim_wheel.png" type="Texture" id=1]
+
+[node name="RadialAim" type="Node2D"]
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="Sprite" type="Sprite" parent="Node2D"]
+rotation = -0.523598
+texture = ExtResource( 1 )
+offset = Vector2( 7, 0 )
+
+[node name="Sprite2" type="Sprite" parent="Node2D"]
+rotation = -0.261799
+texture = ExtResource( 1 )
+offset = Vector2( 7, 0 )
+
+[node name="Sprite3" type="Sprite" parent="Node2D"]
+texture = ExtResource( 1 )
+offset = Vector2( 7, 0 )
+
+[node name="Sprite4" type="Sprite" parent="Node2D"]
+rotation = 0.261799
+texture = ExtResource( 1 )
+offset = Vector2( 7, 0 )
+flip_v = true
+
+[node name="Sprite5" type="Sprite" parent="Node2D"]
+rotation = 0.523598
+texture = ExtResource( 1 )
+offset = Vector2( 7, 0 )
+flip_v = true
